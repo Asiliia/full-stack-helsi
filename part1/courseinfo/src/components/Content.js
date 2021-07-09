@@ -2,7 +2,7 @@ import React from 'react';
 import Part from './Part';
 
 const Content = (props) => {
-    let [part1, part2, part3] = props.parts;
+    const [part1, part2, part3] = props.course.parts;
     
     return (
         <div>

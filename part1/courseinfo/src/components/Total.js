@@ -1,10 +1,10 @@
 import React from 'react';
 
 const Total = (props) => {
-    const {exercises1, exercises2, exercises3} = props
+    let [part1, part2, part3] = props.parts;
 
     return (
-        <p>Number of exercises {exercises1 + exercises2 + exercises3} </p>
+        <p>Number of exercises {part1.exercises + part2.exercises + part3.exercises} </p>
     )
 }
 

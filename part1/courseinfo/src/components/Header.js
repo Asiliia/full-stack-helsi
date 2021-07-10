@@ -1,7 +1,7 @@
 import React from 'react';
 
-const Header = (props) => {
-    const {name} = props.course;
+const Header = ({course}) => {
+    const {name} = course;
     return (
         <h1>{name}</h1>
     )

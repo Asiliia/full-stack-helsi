@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Header from './components/Header';
 import Content from './components/Content';
 import Total from './components/Total';
@@ -6,8 +6,7 @@ import Total from './components/Total';
 const App = () => {
   const course = {
   name:'Half Stack application development',
-  parts: [
-    {
+  parts: [{
       name: 'Fundamentals of React',
       exercises: 10
     }, 
@@ -24,7 +23,7 @@ const App = () => {
 
   return (
     <div>
-      <Header course={course} />
+      <Header course={course}/>
       <Content course={course}/>
       <Total course={course}/>
     </div>

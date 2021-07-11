@@ -1,66 +1,33 @@
-import React, { useState } from 'react'
-
-const Header1 = ({header}) => {
-    return (
-        <>
-            <h1>Unicafe</h1>
-        </>
-    )
-}
-const Header2 = ({header}) => {
-    return (
-        <>
-            <h2>give feedback</h2>
-        </>
-    )
-}
-const Button = ({name}) => {
-    return (
-        <>
-            <button>{name}</button>
-        </>
-    )
-}
-const ButtonGroup = ({buttons}) => {
-    const [good, neutral, bad] = buttons
-    return (
-        <>
-            <Button name={good}/>
-            <Button name={neutral}/>
-            <Button name={bad}/>
-        </>
-    )
-}
-
-const Statistics = ({buttons}) => {
-    const [good, neutral, bad] = buttons
-    return (
-        <>
-            <p>{good} - 6</p>
-            <p>{neutral} - 2</p>
-            <p>{bad} - 1</p>
-        </>
-    )
-}
+import React, { useState } from 'react';
+import data from './constants/constants.js';
+import ButtonGroup from './components/ButtonGroup';
+import Header1 from './components/Header1';
+import Header2 from './components/Header2';
+import Statistics from './components/Statistics';
 
 const App = () => {
-  // save clicks of each button to its own state
-  const [good, setGood] = useState(0)
-  const [neutral, setNeutral] = useState(0)
-  const [bad, setBad] = useState(0)
-  const data = {
-      h1: 'Unicafe',
-      h2: {feedback: 'give feedback', statistics: 'statistics'},
-      buttons: ['good', 'neutral', 'bad']
-}
+  const [goodScore, setGood] = useState(0);
+  const [neutralScore, setNeutral] = useState(0);
+  const [badScore, setBad] = useState(0);
 
-  return (
+  const handleClick = (type) => () => {
+    switch (type) {
+        case 'good': setGood(goodScore + 1);
+        break;
+        case 'neutral': setNeutral(neutralScore + 1);
+        break;
+        case 'bad': setBad(badScore + 1);
+        break;
+    }
+  }
+ 
+   return (
     <div>
-      <Header1/>
-      <Header2/>
-      <ButtonGroup buttons={data.buttons}/>
-      <Header2/>
-      <Statistics buttons={data.buttons}/>
+      <Header1 header={data.h1} />
+      <Header2 header={data.h2.feedback}/>
+      <ButtonGroup buttons={data.buttons} handleClick={handleClick}/>
+      <Header2 header={data.h2.statistics}/>
+      <Statistics buttons={data.buttons} score={[goodScore, neutralScore, badScore]}/>
     </div>
   )
 }

@@ -1,8 +1,13 @@
 const Statistic = ({scoreType, score}) => {
     return (
-        <>
-            <p>{scoreType}: {score} {scoreType === 'positive' ? '%' : null}</p> 
-        </>
+        <tr>
+            <td>
+                {scoreType}
+            </td> 
+            <td>
+                {score} {scoreType === 'positive' ? '%' : null}
+            </td>
+        </tr>
     )
 }
 

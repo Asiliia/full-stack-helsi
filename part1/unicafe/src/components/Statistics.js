@@ -1,12 +1,14 @@
 const Statistics = ({buttons, score}) => {
-    console.log(score);
-    const [good, neutral, bad] = buttons;
-    const [goodScore, neutralScore, badScore] = score;
+    const [good, neutral, bad, all, average, positive] = buttons;
+    const {goodScore, neutralScore, badScore, allScore, averageScore, positiveScore} = score;
     return (
         <>
-            <p>{good} - {goodScore}</p>
-            <p>{neutral} - {neutralScore}</p>
-            <p>{bad} - {badScore}</p>
+            <p>{good}: {goodScore}</p>
+            <p>{neutral}: {neutralScore}</p>
+            <p>{bad}: {badScore}</p>
+            <p>{all}: {allScore}</p>
+            <p>{average}: {averageScore}</p>
+            <p>{positive}: {positiveScore.toFixed(2)}%</p>
         </>
     )
 }

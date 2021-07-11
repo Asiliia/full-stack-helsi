@@ -1,15 +1,24 @@
+import Statistic from "./Statistic";
+
 const Statistics = ({buttons, score}) => {
     const [good, neutral, bad, all, average, positive] = buttons;
     const {goodScore, neutralScore, badScore, allScore, averageScore, positiveScore} = score;
+    console.log(allScore)
     return (
-        <>
-            <p>{good}: {goodScore}</p>
-            <p>{neutral}: {neutralScore}</p>
-            <p>{bad}: {badScore}</p>
-            <p>{all}: {allScore}</p>
-            <p>{average}: {averageScore}</p>
-            <p>{positive}: {positiveScore.toFixed(2)}%</p>
-        </>
+        (allScore > 0)
+        ?
+            <>
+                <Statistic scoreType={good} score={goodScore} />
+                <Statistic scoreType={neutral} score={neutralScore} />
+                <Statistic scoreType={bad} score={badScore} />
+                <Statistic scoreType={all} score={allScore} />
+                <Statistic scoreType={average} score={averageScore} />
+                <Statistic scoreType={positive} score={positiveScore.toFixed(2)} />
+            </> 
+        :
+            <>
+                <p>No feedback given</p>
+            </>       
     )
 }
 

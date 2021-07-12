@@ -1,4 +1,5 @@
-import Statistic from "./Statistic";
+import Statistic from './Statistic';
+import NoData from './NoData';
 
 const Statistics = ({buttons, score}) => {
     const [good, neutral, bad, all, average, positive] = buttons;
@@ -17,9 +18,7 @@ const Statistics = ({buttons, score}) => {
                 </tbody>
             </table> 
         :
-            <>
-                <p>No feedback given</p>
-            </>       
+            <NoData info={'No feedback given'}/>
     )
 }
 

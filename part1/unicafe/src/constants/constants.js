@@ -11,9 +11,9 @@ export const getSum = (param1, param2) => {
 }
 
 export const getAverage = (totalScore, all) => {
-  return (totalScore) / all;
+  return all > 0 ? (totalScore / all) : 0;
 }
 
 export const getPosPercent = (pos, all) => {
-  return all > 0 ? ((pos/all) * 100) : 0;
+  return all > 0 ? (pos / all) * 100 : 0;
 }

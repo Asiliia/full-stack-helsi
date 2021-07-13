@@ -13,8 +13,8 @@ const Statistics = ({buttons, score}) => {
                     <Statistic scoreType={neutral} score={neutralScore} />
                     <Statistic scoreType={bad} score={badScore} />
                     <Statistic scoreType={all} score={allScore} />
-                    <Statistic scoreType={average} score={averageScore} />
-                    <Statistic scoreType={positive} score={positiveScore.toFixed(2)} />
+                    <Statistic scoreType={average} score={averageScore.toFixed(1)} />
+                    <Statistic scoreType={positive} score={positiveScore.toFixed(1)} />
                 </tbody>
             </table> 
         :

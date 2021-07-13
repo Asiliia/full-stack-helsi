@@ -2,9 +2,12 @@ import React, { useState } from 'react'
 
 const App = () => {
   const [ persons, setPersons ] = useState([
-    { name: 'Arto Hellas', phone: '123-456-7653' }
+    { name: 'Arto Hellas', phone: '04-40-123456' },
+    { name: 'Ada Lovelace', phone: '39-44-5323523' },
+    { name: 'Mary Poppendieck', phone: '39-23-6423122' }
   ]);
   const [ newData, setNewData ] = useState({newName: '', newPhone: ''});
+  const [ newFilter, setNewFilter ] = useState('');
 
   const isExisting = (name) => {
     return persons.some(person => person.name === name) && name !== '';
@@ -32,12 +35,32 @@ const App = () => {
   const handlePhoneChange = (event) => {
     setNewData({...newData, newPhone: event.target.value});
   }
+
+  const handleFilterChange = (event) => {
+    setNewFilter(event.target.value);
+  }
+
+  const personToShow = newFilter 
+  ? persons.filter((person) => person.name.toLowerCase().includes(newFilter.toLowerCase()), []) 
+  : persons;
   
   return (
     <div>
+      <h2>Search</h2>
+        <p>
+          <label htmlFor="filter">Filter shown with: </label>
+          <input 
+            id="filter"
+            type="text"
+            value={newFilter}
+            onChange={handleFilterChange}
+            maxLength="20"
+            size="20"
+          />
+        </p>
       <h2>Phonebook</h2>
       <form onSubmit={addPerson}>
-        <div>
+        <p>
         <label htmlFor="name">Enter your name: </label>
            <input
             id="name" 
@@ -48,25 +71,25 @@ const App = () => {
             maxLength="30"
             size="30"
             required/>
-        </div>
-        <div>
+        </p>
+        <p>
         <label htmlFor="phone">Enter your phone: </label>
           <input 
             id="phone"
             type="tel" 
             value={newData.newPhone}
             onChange={handlePhoneChange}
-            pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" 
-            placeholder="123-456-7890"
+            pattern="[0-9]{2}-[0-9]{2}-[0-9]{6}" 
+            placeholder="12-34-567890"
             maxLength="12"
             required />
-        </div>
+        </p>
         <p>
           <button type="submit">add</button>
         </p>
       </form>
       <h2>Numbers</h2>
-       {persons.map(person => <div key={person.name}>{person.name} {person.phone}</div>)}
+       {personToShow.map(person => <div key={person.name}>{person.name} {person.phone}</div>)}
     </div>
   )
 }

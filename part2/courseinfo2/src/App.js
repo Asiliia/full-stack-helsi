@@ -1,8 +1,9 @@
 import React from 'react';
-import Course from './components/Course';
+import CoursesHub from './components/CoursesHub';
 
 const App = () => {
-  const course = {
+  const name = 'Web development curriculum';
+  const courses = [{
     id: 1,
     name: 'Half Stack application development',
     parts: [
@@ -27,9 +28,26 @@ const App = () => {
         id: 4
       }
     ]
+  },
+  {
+    name: 'Node.js',
+    id: 2,
+    parts: [
+      {
+        name: 'Routing',
+        exercises: 3,
+        id: 1
+      },
+      {
+        name: 'Middlewares',
+        exercises: 7,
+        id: 2
+      }
+    ]
   }
+];
 
-  return <Course course={course} />
+  return <CoursesHub name={name} courses={courses} />
 }
 
 export default App;

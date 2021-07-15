@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Persons from './components/Persons';
 import Filter from './components/Filter';
 import AddForm from './components/AddForm';
+import axios from 'axios';
 
 const App = () => {
-  const [ persons, setPersons ] = useState([
-    { name: 'Arto Hellas', phone: '04-40-123456' },
-    { name: 'Ada Lovelace', phone: '39-44-5323523' },
-    { name: 'Mary Poppendieck', phone: '39-23-6423122' }
-  ]);
+  const [ persons, setPersons ] = useState([]);
   const [ newData, setNewData ] = useState({newName: '', newPhone: ''});
   const [ newFilter, setNewFilter ] = useState('');
+
+  const hook = () => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        setPersons(response.data)
+      })
+  }
+
+  useEffect(hook, []);
 
   const isExisting = (name) => {
     return persons.some(person => person.name === name) && name !== '';

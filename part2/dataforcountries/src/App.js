@@ -88,9 +88,7 @@ const App = () => {
       axios
       .get(urlWeather(searchData.country.capital))
       .then(response => {
-        const res = response.data;
-        console.log(response);
-        if (response.status !== '200') {
+        if (response.status !== 200) {
           setWeather({        
             temperature: 'token is expired',
             weather_icon: null,

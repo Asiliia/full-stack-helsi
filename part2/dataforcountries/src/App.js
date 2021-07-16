@@ -6,7 +6,7 @@ import Filter from './components/Filter';
 import Country from './components/Country';
 
 const App = () => {
-  const {url, messages, countryDefault} = data;
+  const {urlCountries, urlWeather, messages, countryDefault} = data;
   const [ newFilter, setNewFilter ] = useState('');
   const [ searchData, setSearchData ] = useState({
     countries: [], 
@@ -14,6 +14,11 @@ const App = () => {
     isProcessing: false,
     country: countryDefault
   });
+  const [ weatherData, setWeather ] = useState({
+    temperature: null,
+    weather_icon: '',
+    wind: ''
+  }); 
 
   const setSearchDataHandle = (notification, isProcessing, countries, country) => {
     setSearchData({
@@ -24,28 +29,42 @@ const App = () => {
     })
   }
 
-  const getCountry = (name, capital, population, flag, languages) => {
+  const getCountry = ({
+    name, 
+    capital, 
+    population, 
+    flag, 
+    languages, 
+    temperature, 
+    weather_icon, 
+    wind
+    }) => {
+  
     return {
       name,
       capital,
       population: population.toLocaleString('en'),
       flag,
-      languages: languages.map(lang => {return { name: lang.name, id: lang.iso639_1 }})
+      languages: languages.map(lang => {return { name: lang.name, id: lang.iso639_1 }}),
+      temperature,
+      weather_icon,
+      wind
     }
   }
 
   const hook = () => {
       if (newFilter.length > 0) {
       setSearchDataHandle('', true, [], countryDefault);
+      
       axios
-      .get(url(newFilter))
+      .get(urlCountries(newFilter))
       .then(response => {
         const res = response.data;
         if (res.length < 1) {
           setSearchDataHandle(messages.search, false, [], countryDefault);
         } else if (res.length === 1) {
           const {name, capital, population, flag, languages, numericCode} = res[0];
-          const country = getCountry(name, capital, population, flag, languages);
+          const country = getCountry({...countryDefault, name, capital, population, flag, languages});
           const countries = [{ name: name, id: numericCode }];
           setSearchDataHandle('', false, countries, country)
         }
@@ -62,7 +81,34 @@ const App = () => {
     }
   }
 
-  useEffect(hook, [newFilter, messages, countryDefault, url]);
+  useEffect(hook, [newFilter, messages, countryDefault, urlCountries, urlWeather]);
+
+  const hookWeather = () => {
+    if (searchData.country.capital !== '') {
+      axios
+      .get(urlWeather(searchData.country.capital))
+      .then(response => {
+        const res = response.data;
+        console.log(response);
+        if (response.status !== '200') {
+          setWeather({        
+            temperature: 'token is expired',
+            weather_icon: null,
+            wind: 'token is expired'
+          });
+        } else {
+          const { temperature, weather_icons, weather_descriptions, wind_speed, wind_dir } = response.data.current;
+          setWeather({        
+            temperature: temperature,
+            weather_icon: weather_icons[0],
+            wind: `${wind_speed} ${wind_dir} | ${weather_descriptions}`
+          });
+        }
+    })
+    }
+  }
+
+  useEffect(hookWeather, [urlWeather, searchData.country.capital]);
 
   const handleFilterChange = (event) => {
     setNewFilter(event.target.value);
@@ -73,14 +119,12 @@ const App = () => {
   }
 
   const countryOrList = searchData.countries.length === 1 
-  ? <Country country={searchData.country} /> 
-  : searchData.countries.map(country => { return ( 
-  <>
+  ? <Country country={searchData.country} weather={weatherData} /> 
+  :  searchData.countries.map(country => { return ( 
     <div key={country.id} data-country={country.name}>
       {country.name}
-      <button onClick={showCountry}>show</button>
+      {<button key={country.id} onClick={showCountry}>show</button>}
     </div>
-  </>
   )});
 
 
@@ -96,12 +140,10 @@ const App = () => {
         newFilter={newFilter} 
         handleFilterChange={handleFilterChange}
       />
-      {console.log(searchData.countries)}
       {countiresToShow}
       {loader}
     </>
   )
 }
-
 export default App
 

@@ -2,83 +2,103 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Loader from './loader/Loader';
 import data from './constants/Constants';
+import Filter from './components/Filter';
+import Country from './components/Country';
 
 const App = () => {
+  const {url, messages, countryDefault} = data;
   const [ newFilter, setNewFilter ] = useState('');
-  const [ searchData, setSearchData ] = useState({countries: [], notification: '', isProcessing: false});
+  const [ searchData, setSearchData ] = useState({
+    countries: [], 
+    notification: '', 
+    isProcessing: false,
+    country: countryDefault
+  });
 
-  
+  const setSearchDataHandle = (notification, isProcessing, countries, country) => {
+    setSearchData({
+        notification, 
+        isProcessing, 
+        countries,
+        country
+    })
+  }
+
+  const getCountry = (name, capital, population, flag, languages) => {
+    return {
+      name,
+      capital,
+      population: population.toLocaleString('en'),
+      flag,
+      languages: languages.map(lang => {return { name: lang.name, id: lang.iso639_1 }})
+    }
+  }
 
   const hook = () => {
       if (newFilter.length > 0) {
-      setSearchData({
-        notification: '', 
-        isProcessing: true, 
-        countries: []});
+      setSearchDataHandle('', true, [], countryDefault);
       axios
-      .get(data.url(newFilter))
+      .get(url(newFilter))
       .then(response => {
         const res = response.data;
-        console.log(res);
         if (res.length < 1) {
-          setSearchData({
-            notification: data.messages.search, 
-            isProcessing: false, 
-            countries: []});
-        } else if (res.length > 0 && res.length < 11) {
-          setSearchData({
-            notification: '', 
-            isProcessing: false, 
-            countries: res.map(arr => { return { name: arr.name, id: arr.numericCode }}
-          )});
+          setSearchDataHandle(messages.search, false, [], countryDefault);
+        } else if (res.length === 1) {
+          const {name, capital, population, flag, languages, numericCode} = res[0];
+          const country = getCountry(name, capital, population, flag, languages);
+          const countries = [{ name: name, id: numericCode }];
+          setSearchDataHandle('', false, countries, country)
+        }
+        else if (res.length > 1 && res.length < 11) {
+          const countries = res.map(arr => { return { name: arr.name, id: arr.numericCode }});
+          setSearchDataHandle('', false, countries, countryDefault)
         } else if (res.length > 10) {
-          setSearchData({
-            notification: data.messages.tooMany,
-            isProcessing: false, 
-            countries: []});
+          setSearchDataHandle(messages.tooMany, false, [], countryDefault);
         }
       })
-      .catch(error => {
-        setSearchData({
-          notification: data.messages.notFound, 
-          isProcessing: false, 
-          countries: []
-        });
+      .catch(() => {
+         setSearchDataHandle(messages.notFound, false, [], countryDefault);
       })
     }
   }
 
-  useEffect(hook, [newFilter]);
+  useEffect(hook, [newFilter, messages, countryDefault, url]);
 
   const handleFilterChange = (event) => {
     setNewFilter(event.target.value);
   }
 
+  const showCountry = (event) => {
+    setNewFilter(event.target.parentElement.dataset.country);
+  }
+
+  const countryOrList = searchData.countries.length === 1 
+  ? <Country country={searchData.country} /> 
+  : searchData.countries.map(country => { return ( 
+  <>
+    <div key={country.id} data-country={country.name}>
+      {country.name}
+      <button onClick={showCountry}>show</button>
+    </div>
+  </>
+  )});
+
+
   const countiresToShow = searchData.notification 
-  ? searchData.notification
-  : searchData.countries.map(country => <p>{country.name}</p>);
+    ? searchData.notification
+    : countryOrList;
 
   const loader = searchData.isProcessing ? <Loader/> : null;
   
   return (
-    
     <>
-    <p>
-        <label htmlFor="filter">Find countries: </label>
-        <input 
-          id="filter"
-          type="text"
-          value={newFilter}
-          onChange={handleFilterChange}
-          placeholder={'Russia'}
-          maxLength="30"
-          size="30"
-        />
-      </p>
-      <div>
-        {countiresToShow}
-        {loader}
-      </div>
+      <Filter 
+        newFilter={newFilter} 
+        handleFilterChange={handleFilterChange}
+      />
+      {console.log(searchData.countries)}
+      {countiresToShow}
+      {loader}
     </>
   )
 }

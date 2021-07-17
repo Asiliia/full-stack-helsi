@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Persons from './components/Persons';
 import Filter from './components/Filter';
 import AddForm from './components/AddForm';
-import axios from 'axios';
+import service from './services/service';
 
 const App = () => {
   const [ persons, setPersons ] = useState([]);
@@ -10,11 +10,11 @@ const App = () => {
   const [ newFilter, setNewFilter ] = useState('');
 
   const hook = () => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
-      })
+    service
+    .getAll()
+    .then(initialPersons => {
+        setPersons(initialPersons)
+    })
   }
 
   useEffect(hook, []);
@@ -32,11 +32,45 @@ const App = () => {
       const personObject = {
         name: newData.newName.trim(),
         phone: newData.newPhone.trim()
-      }
-      setPersons([...persons, personObject]);
-      setNewData({newName: '', newPhone: ''});
+      };
+
+      service
+      .create(personObject)
+      .then(returnedPerson => {
+        setPersons([...persons, returnedPerson]);
+        setNewData({newName: '', newPhone: ''});
+      })
     }
   };
+
+  const updatePerson = (id) => {
+    const person = persons.find(n => n.id === id)
+    const changedPerson = { ...person, name: person.name + 'Upd ' }
+
+    service
+      .update(id, changedPerson)
+      .then(returnedPerson => {
+        setPersons(persons.map(persons => persons.id !== id ? persons : returnedPerson))
+      })
+      .catch(error => {
+        alert(
+          `the note '${person.content}' was already deleted from server`
+        )
+        //setPersons(person.filter(n => n.id !== id)) delete from statew
+      })
+  }
+
+  const deletePerson = (id) => {
+    service
+      .remove(id)
+      .then(deletedPerson => {
+        setPersons(persons.filter(person => person.id !== id))
+      })
+      .catch(error => {
+        console.log(error)
+      });
+      
+  }
 
   const handleNameChange = (event) => {
     setNewData({...newData, newName: event.target.value});
@@ -48,6 +82,10 @@ const App = () => {
 
   const handleFilterChange = (event) => {
     setNewFilter(event.target.value);
+  }
+
+  const handleClick = (event) => {
+    deletePerson(+event.target.dataset.personid);
   }
 
   const personToShow = newFilter 
@@ -68,7 +106,7 @@ const App = () => {
         handlePhoneChange={handlePhoneChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={personToShow}/>
+      <Persons persons={personToShow} handleClick={handleClick}/>
     </div>
   )
 }

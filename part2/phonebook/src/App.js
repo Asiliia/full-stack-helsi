@@ -61,6 +61,12 @@ const App = () => {
   }
 
   const deletePerson = (id) => {
+    const person = persons.find(n => n.id === id)
+    // eslint-disable-next-line no-restricted-globals
+    if (!confirm(`Delete ${person.name}?`)) {
+      return;
+    }
+    
     service
       .remove(id)
       .then(deletedPerson => {
@@ -69,7 +75,6 @@ const App = () => {
       .catch(error => {
         console.log(error)
       });
-      
   }
 
   const handleNameChange = (event) => {

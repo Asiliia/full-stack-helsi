@@ -19,14 +19,29 @@ const App = () => {
 
   useEffect(hook, []);
 
-  const isExisting = (name) => {
-    return persons.some(person => person.name === name) && name !== '';
+  const chekExistingPerson = (param, value) => {
+    return persons.find(person => person[param] === value);
   }
 
   const addPerson = (event) => {
     event.preventDefault();
-    if (isExisting(newData.newName) || isExisting(newData.newPhone)) {
-      alert (`${newData.newName} is already added to phonebook`);
+    const existPhone = chekExistingPerson('phone',newData.newPhone);
+    const existName =  chekExistingPerson('name', newData.newName);
+    if (existPhone) {
+      // eslint-disable-next-line no-restricted-globals
+      const conf = confirm(`${newData.newPhone} is already added to phonebook (${existPhone.name}), replace the old name with a new one?`);
+      if (!conf) {
+        return;
+      }
+      updatePerson(existPhone.id, 'name', newData.newName);
+    }
+    else if (existName) {
+      // eslint-disable-next-line no-restricted-globals
+      const conf = confirm(`${newData.newName} is already added to phonebook, replace the old number with a new one?`);
+      if (!conf) {
+        return;
+      }
+      updatePerson(existName.id, 'phone', newData.newPhone);
     }
     else {
       const personObject = {
@@ -43,20 +58,21 @@ const App = () => {
     }
   };
 
-  const updatePerson = (id) => {
-    const person = persons.find(n => n.id === id)
-    const changedPerson = { ...person, name: person.name + 'Upd ' }
+  const updatePerson = (id, newParam, newValue) => {
+    const person = persons.find(n => n.id === id);
+    const changedPerson = {...person};
+    changedPerson[newParam] = newValue
 
     service
       .update(id, changedPerson)
       .then(returnedPerson => {
-        setPersons(persons.map(persons => persons.id !== id ? persons : returnedPerson))
+        setPersons(persons.map(persons => persons.id !== id ? persons : returnedPerson));
+        setNewData({newName: '', newPhone: ''});
       })
       .catch(error => {
         alert(
           `the note '${person.content}' was already deleted from server`
         )
-        //setPersons(person.filter(n => n.id !== id)) delete from statew
       })
   }
 
